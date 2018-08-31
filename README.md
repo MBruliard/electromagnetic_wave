@@ -14,3 +14,6 @@ Implementation of a Full-Wave code for the numerical simulation of Plasma-Wave i
 -----------------------------------------------------------------------
 
 
+Before running the different programs please think to download the spl package for Python. This pacage is currently developped by the NMPP team of Max Planck Institut for Plasma Physics in München.
+
+More information here: https://github.com/pyccel/spl.git
