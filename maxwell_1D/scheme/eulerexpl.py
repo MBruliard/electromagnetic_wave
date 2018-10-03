@@ -67,7 +67,7 @@ class EulerExplMaxwell1D :
 		while (t < finalT):
 		
 			# TODO: a revoir le signe -> selon la construction de rot 
-			E = startE - 1/mu0 * deltaT/epsilon0 * invmass.dot(rot).dot(startB)
+			E = startE + 1/mu0 * deltaT/epsilon0 * invmass.dot(rot).dot(startB)
 			B = startB + deltaT * dis.dot(startE)
 			
 			

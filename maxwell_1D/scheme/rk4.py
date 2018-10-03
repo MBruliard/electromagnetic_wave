@@ -67,23 +67,24 @@ class SchemeRKfour1D :
 		while (t < finalT):
 		
 			# TODO: a revoir le signe -> selon la construction de rot 
-			ek1 = derE(invmass, -rot, startB, mu0, epsilon0)
-			bk1 = derB(dis, startE)
+			ek1 = deltaT * derE(invmass, rot, startB, mu0, epsilon0)
+			bk1 = deltaT* derB(dis, startE)
 			
-			ek2 = derE(invmass, -rot, startB + deltaT/2 * bk1, mu0, epsilon0)
-			bk2 = derB(dis, startE + deltaT/2 * ek1)
+			ek2 = deltaT * derE(invmass, rot, startB + 0.5*bk1, mu0, epsilon0)
+			bk2 = deltaT * derB(dis, startE + 1/2 * ek1)
 			
-			ek3 = derE(invmass, -rot, startB + deltaT/2 * bk2, mu0, epsilon0)
-			bk3 = derB(dis, startE + deltaT/2*ek2)
+			ek3 = deltaT * derE(invmass, rot, startB + 1/2 * bk2, mu0, epsilon0)
+			bk3 = deltaT* derB(dis, startE + 1/2*ek2)
 			
-			ek4 = derE(invmass, -rot, startB + deltaT * bk3, mu0, epsilon0)
-			bk4 = derB(dis, startE + deltaT * ek3)
+			ek4 = deltaT* derE(invmass, rot, startB +  bk3, mu0, epsilon0)
+			bk4 = deltaT * derB(dis, startE + ek3)
 			
 			
 			
-			E = startE + deltaT/6 * (ek1 + 2*ek2 + 2* ek3  + ek4)
-			B = startB + deltaT/6 * (bk1 + 2*bk2 + 2*bk3 + bk4)
-			
+#			E = startE + deltaT/6 * (ek1 + 2*ek2 + 2* ek3  + ek4)
+#			B = startB + deltaT/6 * (bk1 + 2*bk2 + 2*bk3 + bk4)
+			E = startE + 1/6 * (ek1 + 2*ek2 + 2* ek3  + ek4)
+			B = startB + 1/6 * (bk1 + 2*bk2 + 2*bk3 + bk4)
 			
 			# savefig == True -> we save in some graphs the evolvment of E and B
 			if (savefig):

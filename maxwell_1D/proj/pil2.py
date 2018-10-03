@@ -7,7 +7,7 @@ __aim__ = "Projectors used into DeRham sequence for maxwell 1D"
 # --- Importing modules --- #
 import numpy as np
 from scipy.sparse import csc_matrix
-from scipy.linalg import solve
+from scipy.sparse.linalg import spsolve
 
 
 from mat1d.mass import *
@@ -27,7 +27,7 @@ class Histopolation:
 		----------
 			_histo: csc_matrix (sparse matrix)
 	"""
-	def __init__ (self, V, coeff=False):
+	def __init__ (self, V, coef=False, dirichlet=False):
 		
 		
 		# ... sizes
@@ -61,22 +61,31 @@ class Histopolation:
 					
 					bj_0 = basis_1[ie1, jl_1, 0, g1]
 					
-					if (coeff):
+					if (coef):
 						bj_0 = bj_0 * coeffDspan(V, j)
 					
 					wol = weights_1[ie1, jl_1]
 					
 					res = res + (bj_0 * wol)
 				# ...
-				histo[ie1, j] = histo[ie1, j] + res 
+				histo[ie1,j] = histo[ie1, j] + res 
 			# ...
 		# ...
-		self._histo = csc_matrix(histo)
+
+		if (dirichlet):
+			self._histo = csc_matrix(histo[:, 1:-1])
+			
+		else:		
+			self._histo = csc_matrix(histo)
 			
 	# ...
 	
+	def solve(self, xs):
+		
+		return spsolve(self._histo, xs)
+	# ...
 	
-	def size(self):
+	def shape(self):
 		return self._histo.shape
 	# ...
 	
@@ -104,17 +113,19 @@ class PiL2:
 			_proj: np.array
 			_space: SplineSpace	
 	"""
-	def __init__ (self, V, func, t=0., coeff=False):
+	def __init__ (self, V, func, t=0., coef=False, dirichlet=False, cond=(0., 0.)):
 		"""
 			
 		"""
 
-		histo = Histopolation(V, coeff=coeff)
+		if not dirichlet:
+			print("PiL2 without dirichlet is not implemented yet")
+			exit()
+		#..
 		
-		(m, n) = histo.shape
-	
-		rhs = np.zeros((m, 1))
+		histo = Histopolation(V, coef=coef, dirichlet=dirichlet)
 		
+			
 		# ... sizes
 		[s1] = V.vector_space.starts
 		[e1] = V.vector_space.ends
@@ -126,6 +137,13 @@ class PiL2:
 		k1        = V.quad_order
 		breaks = V.breaks
 		
+		rhs = np.zeros(e1 - p1 +1 - s1)
+		
+		# TODO: Add the part without Dirichlet Boundary Conditions
+		# 		We have to study the one more degree of freedom 
+		
+		
+		# Dirichlet case 
 		for ie1 in range(s1, e1 - p1 + 1):
 
 			j_span_1 = spans_1[ie1]
@@ -138,17 +156,35 @@ class PiL2:
 				res = res + func(pt, t)*wvol
 			# ...
 			
-			rhs[ie1, 0] : rhs[ie1, 0] + res	
+			rhs[ie1] = rhs[ie1] + res	
 		# ...
 		
-		proj = solve(A, rhs)
-
 		
+		proj = histo.solve(rhs)
+		
+		if (dirichlet):
+			# we add boundary conditions
+			sol = np.zeros(proj.shape[0]+2)
+			
+			sol[0] = cond[0]
+			sol[-1] = cond[-1]
+			sol[1:-1] = proj
+		
+			self._proj = sol
+		else:
+			self._proj = proj				
 		# ...		
-		self._proj = proj
+
 		self._space = V
 
 	# ...
+	
+	def proj (self):
+		return self._proj
+		
+	def shape (self):
+		return self._proj.shape
+	
 
 # ...
 		

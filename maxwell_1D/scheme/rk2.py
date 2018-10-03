@@ -67,11 +67,11 @@ class SchemeRKtwo1D :
 		while (t < finalT):
 		
 			# TODO: a revoir le signe -> selon la construction de rot 
-			edemi = startE + deltaT/2*derE(invmass, -rot, startB, mu0, epsilon0)
+			edemi = startE + deltaT/2*derE(invmass, rot, startB, mu0, epsilon0)
 			bdemi = startB + deltaT/2*derB(dis, startE)
 			
 			
-			deredemi = derE(invmass, -rot, bdemi, mu0, epsilon0)
+			deredemi = derE(invmass, rot, bdemi, mu0, epsilon0)
 			derbdemi = derB(dis, edemi)
 			
 			E = startE + deltaT*deredemi

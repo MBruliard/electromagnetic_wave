@@ -54,10 +54,10 @@ def assemblyDerivateMatrix(V):
 	M = np.zeros((nbS_v,nbS_v))
 	
 	for i in range(0, nbS_v):
-		M[i,i] = 1.
+		M[i,i] = -1.
 		# avant c'était 1 ici et -1 plus bas
 		if i>0:
-			M[i,i-1] = -1.
+			M[i,i-1] = 1.
 	# ...
 	
 	der = M[1:nbS_v, :]
